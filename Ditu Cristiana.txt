@@ -1,3 +1,5 @@
+create database CristianaDitu_Agency
+
 #Pas 1 - se creaza tabelele
 
 -- Crearea tabelului pentru clienți
