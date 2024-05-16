@@ -1,0 +1,332 @@
+#Pas 1 - se creaza tabelele
+
+-- Crearea tabelului pentru clienți
+CREATE TABLE Clienti (
+    ID INT PRIMARY KEY,
+    Nume VARCHAR(50),
+    Prenume VARCHAR(50),
+    Email VARCHAR(100),
+    Telefon VARCHAR(15)
+);
+
+-- Crearea tabelului pentru zboruri
+CREATE TABLE Zboruri (
+    ID INT PRIMARY KEY,
+    Origine VARCHAR(100),
+    Destinatie VARCHAR(100),
+    Data_zbor DATE,
+    Pret FLOAT
+);
+
+-- Crearea tabelului pentru locații
+CREATE TABLE Locatii (
+    ID INT PRIMARY KEY,
+    Oras VARCHAR(100),
+    Tara VARCHAR(100)
+);
+
+-- Crearea tabelului pentru bilete
+CREATE TABLE Bilete (
+    ID INT PRIMARY KEY,
+    Client_ID INT,
+    Zbor_ID INT,
+    Data_achizitie DATE,
+    FOREIGN KEY (Client_ID) REFERENCES Clienti(ID),
+    FOREIGN KEY (Zbor_ID) REFERENCES Zboruri(ID)
+);
+
+-- Crearea tabelului pentru sezoane
+CREATE TABLE Sezoane (
+    ID INT PRIMARY KEY,
+    Nume VARCHAR(50),
+    Data_inceput DATE,
+    Data_sfarsit DATE
+);
+
+#Pas2 - se insereaza date in tabele
+
+-- Inserarea datelor în tabelul pentru clienți
+INSERT INTO Clienti (ID, Nume, Prenume, Email, Telefon) VALUES 
+(1, 'Popescu', 'Ana', 'ana.popescu@example.com', '0721123456'),
+(2, 'Ionescu', 'Mihai', 'mihai.ionescu@example.com', '0732123456');
+
+-- Inserarea datelor în tabelul pentru zboruri
+INSERT INTO Zboruri (ID, Origine, Destinatie, Data_zbor, Pret) VALUES 
+(1, 'Bucuresti', 'Londra', '2024-06-15', 350),
+(2, 'Paris', 'New York', '2024-07-20', 700);
+
+-- Inserarea datelor în tabelul pentru locații
+INSERT INTO Locatii (ID, Oras, Tara) VALUES 
+(1, 'Bucuresti', 'Romania'),
+(2, 'Londra', 'Marea Britanie');
+
+-- Inserarea datelor în tabelul pentru bilete
+INSERT INTO Bilete (ID, Client_ID, Zbor_ID, Data_achizitie) VALUES 
+(1, 1, 1, '2024-05-10'),
+(2, 2, 2, '2024-05-11');
+
+-- Inserarea datelor în tabelul pentru sezoane
+INSERT INTO Sezoane (ID, Nume, Data_inceput, Data_sfarsit) VALUES 
+(1, 'Vara', '2024-06-01', '2024-08-31'),
+(2, 'Toamna', '2024-09-01', '2024-11-30');
+
+#Pas3 - se adauga noi coloane in tabelele deja create
+
+-- Adaugarea unei noi coloane "Varsta" în tabelul Clienti
+ALTER TABLE Clienti
+ADD Varsta INT;
+
+-- Adaugarea unei noi coloane "Durata_zbor" în tabelul Zboruri
+ALTER TABLE Zboruri
+ADD Durata_zbor INT;
+
+-- Adaugarea unei noi coloane "Cod_postal" în tabelul Locatii
+ALTER TABLE Locatii
+ADD Cod_postal VARCHAR(10);
+
+-- Adaugarea unei noi coloane "Clasa" în tabelul Bilete
+ALTER TABLE Bilete
+ADD Clasa VARCHAR(20);
+
+-- Adaugarea unei noi coloane "Descriere" în tabelul Sezoane
+ALTER TABLE Sezoane
+ADD Descriere VARCHAR(100);
+
+#Pas4- se adauga date in tabele pentru coloanele adaugate ulterior
+
+-- Inserarea datelor în noua coloană "Varsta" în tabelul Clienti
+UPDATE Clienti
+SET Varsta = 30
+WHERE ID = 1;
+
+UPDATE Clienti
+SET Varsta = 25
+WHERE ID = 2;
+
+-- Inserarea datelor în noua coloană "Durata_zbor" în tabelul Zboruri
+UPDATE Zboruri
+SET Durata_zbor = 180
+WHERE ID = 1;
+
+UPDATE Zboruri
+SET Durata_zbor = 540
+WHERE ID = 2;
+
+-- Inserarea datelor în noua coloană "Cod_postal" în tabelul Locatii
+UPDATE Locatii
+SET Cod_postal = '010101'
+WHERE ID = 1;
+
+UPDATE Locatii
+SET Cod_postal = 'SW1A 1AA'
+WHERE ID = 2;
+
+-- Inserarea datelor în noua coloană "Clasa" în tabelul Bilete
+UPDATE Bilete
+SET Clasa = 'Economy'
+WHERE ID = 1;
+
+UPDATE Bilete
+SET Clasa = 'Business'
+WHERE ID = 2;
+
+-- Inserarea datelor în noua coloană "Descriere" în tabelul Sezoane
+UPDATE Sezoane
+SET Descriere = 'Perioada calda si insorita'
+WHERE ID = 1;
+
+UPDATE Sezoane
+SET Descriere = 'Racoare si frunze cazatoare'
+WHERE ID = 2;
+
+#Pas 5 - verificare date din tabele
+
+select * from Bilete;
+select * from Clienti;
+select * from Locatii;
+select * from Sezoane;
+select * from Zboruri;
+
+#Pas 6 - executarea unor functii de verificari intre tabelele create
+
+
+-- Interogare pentru a obține detaliile biletelor, inclusiv informații despre client, zbor și locație
+SELECT Bilete.ID AS Bilet_ID, Clienti.Nume, Clienti.Prenume, Zboruri.Origine, Zboruri.Destinatie, Locatii.Oras, Locatii.Tara
+FROM Bilete
+LEFT JOIN Clienti ON Bilete.Client_ID = Clienti.ID
+LEFT JOIN Zboruri ON Bilete.Zbor_ID = Zboruri.ID
+LEFT JOIN Locatii ON Zboruri.Destinatie = Locatii.Oras;
+
+/*Această interogare folosește LEFT JOIN pentru a asocia informațiile din tabelele Clienti, Bilete, Zboruri și Locatii în funcție de cheile străine și primare corespunzătoare. 
+Astfel, vei obține o listă de bilete împreună cu detaliile despre client, zbor și destinație, inclusiv atunci când nu există o potrivire între tabele.*/
+
+
+-- Interogare pentru a obține detaliile biletelor și informații despre client și zboruri
+SELECT Bilete.ID AS Bilet_ID, Clienti.Nume, Clienti.Prenume, Zboruri.Origine, Zboruri.Destinatie
+FROM Bilete
+INNER JOIN Clienti ON Bilete.Client_ID = Clienti.ID
+INNER JOIN Zboruri ON Bilete.Zbor_ID = Zboruri.ID;
+
+/*Această interogare va returna doar biletele pentru care există atât informații despre client cât și despre zboruri în tabelele respective. 
+Utilizând `INNER JOIN`, interogarea filtrează înregistrările care nu au corespondență în ambele tabele, astfel încât să obții doar rezultatele relevante.*/
+
+-- Right Join
+SELECT *
+FROM Clienti
+RIGHT JOIN Bilete ON Clienti.ID = Bilete.Client_ID;
+/*
+Această interogare va returna toate înregistrările din tabela `Clienti`, iar pentru fiecare înregistrare va afișa toate informațiile corespunzătoare din tabela `Bilete`
+care au același `ID` ca și `Client_ID` din tabela `Clienti`. Dacă nu există nicio potrivire în `Bilete` pentru un client din `Clienti`, valorile pentru coloanele din `Bilete` vor fi `NULL`.
+*/
+
+-- Interogare pentru a crea un raport cu toate informațiile disponibile
+SELECT 
+    Clienti.Nume AS Nume_Client,
+    Clienti.Prenume AS Prenume_Client,
+    Clienti.Email,
+    Clienti.Telefon,
+    Bilete.ID AS ID_Bilet,
+    Zboruri.Origine AS Oras_Origine,
+    Zboruri.Destinatie AS Oras_Destinatie,
+    Zboruri.Data_zbor,
+    Zboruri.Pret,
+    Locatii.Oras AS Oras_Zbor,
+    Locatii.Tara AS Tara_Zbor,
+    Sezoane.Nume AS Nume_Seazon,
+    Sezoane.Data_inceput AS Inceput_Seazon,
+    Sezoane.Data_sfarsit AS Sfarsit_Seazon
+FROM 
+    Bilete
+LEFT JOIN Clienti ON Bilete.Client_ID = Clienti.ID
+LEFT JOIN Zboruri ON Bilete.Zbor_ID = Zboruri.ID
+LEFT JOIN Locatii ON Zboruri.Destinatie = Locatii.Oras
+LEFT JOIN Sezoane ON Zboruri.Data_zbor BETWEEN Sezoane.Data_inceput AND Sezoane.Data_sfarsit;
+
+/*Această interogare va returna un raport care include toate informațiile relevante din tabelele specificate, 
+astfel încât să obții o imagine completă a biletelor, clienților și zborurilor, inclusiv detaliile despre locație și sezoane.*/
+
+
+#Pas 7 - executarea unor functii ce folosesc diverse clauze
+
+#1. Interogare folosind `WHERE` pentru a selecta biletele pentru un anumit client:
+
+SELECT * 
+FROM Bilete 
+WHERE Client_ID = 1;
+
+#2. Interogare folosind `ORDER BY` pentru a sorta zborurile după pret:
+
+SELECT * 
+FROM Zboruri 
+ORDER BY Pret desc;
+
+#3. Interogare folosind `GROUP BY` pentru a grupa zborurile în funcție de destinație și a calcula media prețului:
+
+SELECT Destinatie, AVG(Pret) AS Pret_mediu
+FROM Zboruri
+GROUP BY Destinatie;
+
+#4. **Interogare pentru a calcula numărul total de bilete achiziționate de fiecare client și afișarea doar pentru clienții care au achiziționat mai mult de 3 bilete:**
+
+SELECT Client_ID, COUNT(*) AS Numar_bilete_achizitionate
+FROM Bilete
+GROUP BY Client_ID
+HAVING COUNT(*) < 3;
+
+#5. **Interogare pentru a calcula suma totală a prețurilor biletelor pentru fiecare destinație și afișarea doar pentru destinațiile cu o sumă totală mai mare de 500*
+
+SELECT Zboruri.Destinatie, SUM(Zboruri.Pret) AS Suma_totala_preturi
+FROM Zboruri
+GROUP BY Zboruri.Destinatie
+HAVING SUM(Zboruri.Pret) < 500
+
+#6. **Interogare pentru a afișa media prețurilor biletelor pentru fiecare an și afișarea doar pentru anii cu o medie mai mare de 500:**
+
+SELECT YEAR(Data_zbor) AS An, AVG(Pret) AS Medie_pret
+FROM Zboruri
+GROUP BY YEAR(Data_zbor)
+HAVING AVG(Pret) > 500;
+
+Insert into Zboruri (id, Origine, Destinatie , Data_zbor, Pret) values (5, 'Cluj', 'Barcelona', '2025-02-11', '850')
+
+update Zboruri set durata_zbor = 240 where id = 5
+
+select * from Zboruri
+
+
+#7. Interogare cu subquery pentru a afisa destinatia si pretul biletelor din tabela Zboruri unde pretul este mai mare decat media acestora.
+
+select Destinatie, Pret from Zboruri where Pret > (select AVG(pret) from Zboruri);
+
+
+#Pas 8 - definirea unor tabele suplimentare pt a folosi functii ca drop/delete/truncate
+
+/*Se creaza o tabela separata pentru a folosi functiile DROP si DELETE*/
+
+Create table Anulate 
+(  ID INT ,
+    Delete1 VARCHAR(50),
+    Delete2 VARCHAR(50),
+    Delete3 VARCHAR(100)
+);
+
+select * from Anulate;
+
+insert into Anulate (id, Delete1, Delete2, Delete3) values 
+(1, 'a1', 'b1', 'c1'),
+(2, 'a2', 'b2', 'c2'),
+(3, 'a3', 'b3', 'c3')
+
+-- drop table Anulate 
+-- Aceasta functie sterge toata tabela
+
+
+-- delete from Anulate where id = 1 
+-- aceasta frunctie sterge randrul din tabela cu id-ul = 1
+
+-- delete from Anulate
+-- aceasta frunctie sterge toate randurile din tabela
+
+alter table Anulate drop column Delete2
+
+
+Create table TestTruncate 
+(  ID INT ,
+    Trc1 VARCHAR(50),
+    Trc2 VARCHAR(50),
+    Trc3 VARCHAR(100)
+);
+
+select * from TestTruncate
+
+insert into TestTruncate (id,Trc1, Trc2, Trc3) values 
+(1, 'a1', 'b1', 'c1'),
+(2, 'a2', 'b2', 'c2'),
+(3, 'a3', 'b3', 'c3')
+
+truncate table TestTruncate -- aceasta functie goleste toate datele din tabela
+
+-- drop table TestTruncate -- aceasta functie sterge tabela intreaga
+-- drop database TravelAgency -- aceasta functie sterge baza de date cu toate inregistrarile
+
+
+#/*
+Cum se poate dezvolta mai mult această bază de date:
+
+1. **Adăugarea de Tabele Suplimentare:**
+   - Poți adăuga tabele suplimentare pentru a gestiona informații precum aeroporturile, companiile aeriene, tipurile de aeronave sau furnizorii de servicii de călătorie.
+   - Tabelele pentru aeroporturi ar putea conține informații precum codul IATA, orașul și țara, coordonatele geografice etc.
+   - Tabelele pentru companiile aeriene ar putea conține informații despre nume, flota de avioane, rutele disponibile etc.
+
+2. **Extinderea Detaliilor:**
+   - Poți adăuga mai multe detalii pentru clienți, cum ar fi adresa de livrare, data nașterii sau preferințele de călătorie.
+   - Pentru zboruri, poți adăuga detalii precum ora plecării și sosirii, durata zborului, numărul de locuri disponibile etc.
+   - Pentru bilete, poți adăuga informații suplimentare despre statutul biletului, opțiuni de plată, detalii despre bagaje etc.
+
+3. **Optimizarea Performanței:**
+   - Poți optimiza performanța bazei de date prin adăugarea de indecși pe coloanele frecvent accesate, cum ar fi ID-urile cheie sau coloanele utilizate în căutări și filtrări.
+   - Utilizarea vederilor sau a procedurilor stocate poate ajuta la simplificarea interogărilor complexe și la îmbunătățirea performanței generale a bazei de date.
+
+Adăugarea acestor îmbunătățiri va ajuta la extinderea și îmbunătățirea bazei de date, oferind o mai mare flexibilitate, performanță și securitate.*/
+
+ 
